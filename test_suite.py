@@ -5,12 +5,18 @@ import aiohttp
 import json
 import os
 import sys
+import requests
 import wave
 import websockets
 
 from datetime import datetime
+from tabs_demo_poc_deux_sdk import FoundryClient
+from tabs_demo_poc_deux_sdk.core.api import UserTokenAuth
 
 startTime = datetime.now()
+
+auth = UserTokenAuth(hostname="https://granttheyeti.usw-16.palantirfoundry.com/", token=os.environ["FOUNDRY_TOKEN"])
+client = FoundryClient(auth=auth, hostname="https://granttheyeti.usw-16.palantirfoundry.com/")
 
 all_mic_data = []
 all_transcripts = []
@@ -190,6 +196,12 @@ async def run(key, method, format, **kwargs):
                                 transcript = subtitle_formatter(res, format)
                             print(transcript)
                             all_transcripts.append(transcript)
+                            requests.post("http://127.0.0.1:5000/transcription", json={"transcript": transcript})
+                            r2 = client.ontology.queries.tabs_input_poc(transcript=transcript)
+                            print(r2)
+                            '''
+                            result = client.ontology.queries.get_task_description(task_name="value")
+                            '''
 
                         # if using the microphone, close stream if user says "goodbye"
                         if method == "mic" and "goodbye" in transcript.lower():
