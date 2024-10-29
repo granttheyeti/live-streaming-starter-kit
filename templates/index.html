@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Conversation History</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var socket = io.connect('http://' + document.domain + ':' + location.port);
+            var messageList = document.getElementById('messages');
+            
+            socket.on('new_transcript', function(data) {
+                var newMessage = document.createElement('li');
+                newMessage.textContent = data.transcript;
+                newMessage.addEventListener('click', function() {
+                    fetch('/message_click', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ message: data.transcript })
+                    }).then(response => response.json()).then(data => {
+                        console.log(data);
+                    });
+                });
+                messageList.appendChild(newMessage);
+            });
+        });
+    </script>
+</head>
+<body>
+    <h1>Conversation History</h1>
+    <ul id="messages"></ul>
+</body>
+</html>

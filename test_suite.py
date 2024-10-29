@@ -197,8 +197,8 @@ async def run(key, method, format, **kwargs):
                             print(transcript)
                             all_transcripts.append(transcript)
                             requests.post("http://127.0.0.1:5000/transcription", json={"transcript": transcript})
-                            r2 = client.ontology.queries.tabs_input_poc(transcript=transcript)
-                            print(r2)
+                            #r2 = client.ontology.queries.tabs_input_poc(transcript=transcript)
+                            #print(r2)
                             '''
                             result = client.ontology.queries.get_task_description(task_name="value")
                             '''
