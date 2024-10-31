@@ -28,6 +28,9 @@
             cursor: pointer;
             transition: background-color 0.3s ease, box-shadow 0.3s ease;
         }
+        .message-bubble.new-message {
+            background-color: #ffeb3b;
+        }
         .message-bubble:hover {
             background-color: #d4ffb3;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -104,7 +107,7 @@
             
             socket.on('new_transcript', function(data) {
                 var newMessage = document.createElement('li');
-                newMessage.className = 'message-bubble';
+                newMessage.className = 'message-bubble new-message';
                 newMessage.textContent = data.transcript;
 
                 var spinner = document.createElement('div');
@@ -132,7 +135,13 @@
                     });
                 });
 
-                messageList.appendChild(newMessage);
+                // Insert the new message at the top of the list
+                messageList.insertBefore(newMessage, messageList.firstChild);
+
+                // Remove the new-message class after a delay
+                setTimeout(function() {
+                    newMessage.classList.remove('new-message');
+                }, 1000);
             });
         });
     </script>
