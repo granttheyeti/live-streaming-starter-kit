@@ -10,8 +10,9 @@ import wave
 import websockets
 
 from datetime import datetime
-from tabs_demo_poc_deux_sdk import FoundryClient
-from tabs_demo_poc_deux_sdk.core.api import UserTokenAuth
+from tabs_black_box_sdk import FoundryClient
+from foundry_sdk_runtime.auth import UserTokenAuth
+from tabs_black_box_sdk.types import ActionConfig, ActionMode, ValidationResult, ReturnEditsMode
 
 startTime = datetime.now()
 
@@ -68,6 +69,13 @@ def mic_callback(input_data, frame_count, time_info, status_flag):
     audio_queue.put_nowait(input_data)
     return (input_data, pyaudio.paContinue)
 
+async def call_logic(transcript):
+    client.ontology.actions.process_statement(
+        action_config=ActionConfig(
+            mode=ActionMode.VALIDATE_AND_EXECUTE,
+            return_edits=ReturnEditsMode.ALL),
+        statement=transcript
+    )
 
 async def run(key, method, format, **kwargs):
     deepgram_url = f'{kwargs["host"]}/v1/listen?punctuate=true'
@@ -197,11 +205,7 @@ async def run(key, method, format, **kwargs):
                             print(transcript)
                             all_transcripts.append(transcript)
                             requests.post("http://127.0.0.1:5000/transcription", json={"transcript": transcript})
-                            #r2 = client.ontology.queries.tabs_input_poc(transcript=transcript)
-                            #print(r2)
-                            '''
-                            result = client.ontology.queries.get_task_description(task_name="value")
-                            '''
+                            asyncio.create_task(call_logic(transcript))
 
                         # if using the microphone, close stream if user says "goodbye"
                         if method == "mic" and "goodbye" in transcript.lower():
