@@ -2,7 +2,7 @@ import requests
 import time
 import os
 
-from tabs_pass_thru_logic_test_sdk import FoundryClient
+from tabs_black_box_sdk import FoundryClient
 from foundry_sdk_runtime.auth import UserTokenAuth
 from tabs_pass_thru_logic_test_sdk.types import ActionConfig, ActionMode, ValidationResult, ReturnEditsMode
 
